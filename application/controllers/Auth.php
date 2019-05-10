@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Auth extends CI_Controller {
+class Auth extends CI_Controller
+{
 
     public function __construct()
     {
@@ -11,24 +12,24 @@ class Auth extends CI_Controller {
         // $this->model->
     }
 
-	public function index()
-	{
-        $this->form_validation->set_rules('email', 'Email' , 'trim|required|valid_email'); // ini set rules untuk syarat pada form login, email itu name pada view nya, Email itu alias nya, trim itu agar tidak ada spasi, required itu harus diisi, dan valid email itu email nya valid
-        $this->form_validation->set_rules('password', 'Password' , 'trim|required');
+    public function index()
+    {
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email'); // ini set rules untuk syarat pada form login, email itu name pada view nya, Email itu alias nya, trim itu agar tidak ada spasi, required itu harus diisi, dan valid email itu email nya valid
+        $this->form_validation->set_rules('password', 'Password', 'trim|required');
 
-        if($this->form_validation->run() == false){
+        if ($this->form_validation->run() == false) {
             $data['title'] = 'Login page';
             $this->load->view('templates/auth_header', $data);
             $this->load->view('auth/login');
             $this->load->view('templates/auth_footer');
-        }
-        else{
+        } else {
             // when the validation success
             $this->_login();
         }
     }
 
-    private function _login(){ //only can access by login
+    private function _login()
+    { //only can access by login
         $email = $this->input->post('email');
         $password = $this->input->post('password');
 
@@ -36,49 +37,45 @@ class Auth extends CI_Controller {
         $user = $this->db->get_where('user', ['email' => $email])->row_array();
 
         // jika user nya ada
-        if($user){
+        if ($user) {
             // jika user nya active
-            if($user['is_active'] == 1){
+            if ($user['is_active'] == 1) {
                 // cek password nya
-                if(password_verify($password, $user['password'])){
+                if (password_verify($password, $user['password'])) {
                     // jika password benar
                     $data = [
                         'email' => $user['email'],
                         'role_id' => $user['role_id']
                     ];
                     $this->session->set_userdata($data);
-                    if($user['role_id'] == 1){
+                    if ($user['role_id'] == 1) {
                         redirect('admin');
-                    }
-                    else{
+                    } else {
                         redirect('user');
                     }
-                }
-                else{
+                } else {
                     // jika password salah
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
                     Wrong password </div>');
                     redirect('auth');
                 }
-            }
-            else{
+            } else {
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
                 This email has not been active </div>');
                 redirect('auth');
             }
-        }
-        else{
+        } else {
             // user nya tidak ada
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
             Email is not registered</div>');
             redirect('auth');
         }
     }
-    
+
     public function registration()
     {
         $this->form_validation->set_rules('name', 'Name', 'required|trim');
-        $this->form_validation->set_rules('email', 'Email','required|trim|valid_email|is_unique[user.email]',[
+        $this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email|is_unique[user.email]', [
             'is_unique' => 'This email has already registered!'
         ]);
 
@@ -89,17 +86,16 @@ class Auth extends CI_Controller {
 
         $this->form_validation->set_rules('password2', 'Password', 'required|trim|matches[password1]');
 
-        if($this->form_validation->run()== false){
+        if ($this->form_validation->run() == false) {
             $data['title'] = 'User Registration';
             $this->load->view('templates/auth_header', $data);
             $this->load->view('auth/registration');
             $this->load->view('templates/auth_footer');
-        }
-        else{
+        } else {
             $data = [
                 'name' => htmlspecialchars($this->input->post('name', true)), // htmlspecial chars untuk mensanitasi input nya
                 'email' => htmlspecialchars($this->input->post('email', true)),
-                'image' => 'default.jpg', 
+                'image' => 'default.jpg',
                 'password' => password_hash($this->input->post('password1'), PASSWORD_DEFAULT),
                 'role_id' => 2,
                 'is_active' => 1,
@@ -110,11 +106,11 @@ class Auth extends CI_Controller {
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Congratulations your account has been created! please activate on email and login</div>');
             redirect('auth');
-
         }
     }
 
-    public function logout(){
+    public function logout()
+    {
         $this->session->unset_userdata('email');
         $this->session->unset_userdata('role_id');
 
