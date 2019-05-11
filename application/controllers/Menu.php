@@ -45,7 +45,7 @@ class Menu extends CI_Controller
 
         $this->form_validation->set_rules('title', 'Title', 'required');
         $this->form_validation->set_rules('menu_id', 'Menu', 'required');
-        $this->form_validation->set_rules('url', 'Url', 'required');
+        $this->form_validation->set_rules('url', 'URL', 'required');
         $this->form_validation->set_rules('icon', 'icon', 'required');
 
 
