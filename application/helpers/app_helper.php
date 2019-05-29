@@ -45,5 +45,8 @@ function check_access($role_id, $menu_id)
         'menu_id' => $menu_id
     ]);
 
-    if ($result->num_rows() > 0) { }
+    // it means if result from query $result > 0 , means can be access then return
+    if ($result->num_rows() > 0) {
+        return "checked='checked'";
+    }
 }
